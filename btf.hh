@@ -75,9 +75,9 @@ struct BTFCommonHeader
 
 struct BTFExtra
 {
-	BTFCommonHeader             Header;
+    BTFCommonHeader             Header;
     std::string                 XMLString;
-	std::vector<std::string>    Channels;
+    std::vector<std::string>    Channels;
     std::vector<Matrix3>        Rotations;
 };
 
@@ -117,8 +117,8 @@ struct BTF
     uint8_t*					LeftSingularU = nullptr,
            *                    RightSingularSxV = nullptr;
 
-	uint64_t					LeftSingularUSize = 0,
-								RightSingularSxVSize = 0;
+    uint64_t					LeftSingularUSize = 0,
+                                RightSingularSxVSize = 0;
 
     Vector3*					Lights = nullptr;
 
@@ -130,8 +130,8 @@ struct BTF
     uint32_t                    UElementStride = 0,
                                 SxVElementStride = 0;
 
-	uint32_t*					Offsets = nullptr;
-	uint32_t*					ComponentCounts = nullptr;
+    uint32_t*					Offsets = nullptr;
+    uint32_t*					ComponentCounts = nullptr;
 };
 
 struct BTFDeleter
@@ -417,20 +417,20 @@ inline void BTFEvaluateMatrixHalfFloatToFloat(const BTF* btf, uint32_t lv_idx, u
 
 void DestroyBTF(BTF* btf)
 {
-	delete[] btf->HeightMap;
-	btf->HeightMap = nullptr;
-	delete[] btf->LeftSingularU;
-	btf->LeftSingularU = nullptr;
-	delete[] btf->RightSingularSxV;
-	btf->RightSingularSxV = nullptr;
-	delete[] btf->Lights;
-	btf->Lights = nullptr;
-	delete[] btf->Offsets;
-	btf->Offsets = nullptr;
-	delete[] btf->ComponentCounts;
-	btf->ComponentCounts = nullptr;
+    delete[] btf->HeightMap;
+    btf->HeightMap = nullptr;
+    delete[] btf->LeftSingularU;
+    btf->LeftSingularU = nullptr;
+    delete[] btf->RightSingularSxV;
+    btf->RightSingularSxV = nullptr;
+    delete[] btf->Lights;
+    btf->Lights = nullptr;
+    delete[] btf->Offsets;
+    btf->Offsets = nullptr;
+    delete[] btf->ComponentCounts;
+    btf->ComponentCounts = nullptr;
     free(btf->LightIndices);
-	btf->LightIndices = nullptr;
+    btf->LightIndices = nullptr;
 }
 
 
@@ -472,8 +472,8 @@ inline Vector3 SphereToCartesianCoordinates(const Vector2& angles)
 
 BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
 {
-	BTFExtra extra;
-	BTFPtr btf(new BTF, BTFDeleter());
+    BTFExtra extra;
+    BTFPtr btf(new BTF, BTFDeleter());
     std::fstream fs(filename, std::ios::binary|std::ios::in);
 
     if(!fs)
@@ -543,8 +543,8 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
             extra.Channels = { "R", "G", "B" };
         }
 
-		btf->Offsets = new uint32_t[2*btf->ChannelCount];
-		btf->ComponentCounts = new uint32_t[btf->ChannelCount];
+        btf->Offsets = new uint32_t[2*btf->ChannelCount];
+        btf->ComponentCounts = new uint32_t[btf->ChannelCount];
 
         auto header_read = fs.tellg() - start_off;
         if(header_read != extra.Header.Size)
@@ -640,24 +640,24 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
         btf->RowCount = expected_row_count;
         btf->ColumnCount = expected_column_count;
 
-		uint32_t u_plane_offset = 0, sxv_plane_offset = 0;
+        uint32_t u_plane_offset = 0, sxv_plane_offset = 0;
 
-		struct DeleteSubelements
-		{
-			uint32_t SubDataCount;
+        struct DeleteSubelements
+        {
+            uint32_t SubDataCount;
             DeleteSubelements(uint32_t count)
                 :   SubDataCount(count) {}
-			void operator()(uint8_t** data)
-			{
-				for(uint32_t i = 0; i < SubDataCount; ++i)
-				{
-					delete[] data[i];
-				}
-				delete[] data;
-			}
-		};
+            void operator()(uint8_t** data)
+            {
+                for(uint32_t i = 0; i < SubDataCount; ++i)
+                {
+                    delete[] data[i];
+                }
+                delete[] data;
+            }
+        };
 
-		std::unique_ptr<uint8_t*[], DeleteSubelements> matrix_planes(new uint8_t*[2*btf->ChannelCount], DeleteSubelements(2*btf->ChannelCount));
+        std::unique_ptr<uint8_t*[], DeleteSubelements> matrix_planes(new uint8_t*[2*btf->ChannelCount], DeleteSubelements(2*btf->ChannelCount));
 
         for(uint32_t chan_idx = 0, chan_idx_end = btf->ChannelCount; chan_idx < chan_idx_end; ++chan_idx)
         {
@@ -677,11 +677,11 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
         
             auto num_component = std::max(1u, std::min(num_components, num_components));
 
-			btf->ComponentCounts[chan_idx] = num_component;
+            btf->ComponentCounts[chan_idx] = num_component;
 
             uint32_t slice_size = num_component*btf->ChannelCount*btf->DataSize;
 
-			auto u_plane = matrix_planes[chan_idx] = new uint8_t[expected_row_count*slice_size];
+            auto u_plane = matrix_planes[chan_idx] = new uint8_t[expected_row_count*slice_size];
             auto SxV_plane = matrix_planes[btf->ChannelCount + chan_idx] = new uint8_t[expected_column_count*slice_size];
             
             uint32_t num_row, num_column;
@@ -707,55 +707,55 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
                 return nullptr;
             }
 
-			uint32_t left_singular_size = btf->RowCount*num_components*btf->DataSize;
-			fs.read(reinterpret_cast<char*>(u_plane), left_singular_size);
+            uint32_t left_singular_size = btf->RowCount*num_components*btf->DataSize;
+            fs.read(reinterpret_cast<char*>(u_plane), left_singular_size);
 
-			if(!fs)
-			{
-			   return nullptr;
-			}
+            if(!fs)
+            {
+               return nullptr;
+            }
 
-			uint32_t right_singular_size = btf->ColumnCount*num_components*btf->DataSize;
-			fs.read(reinterpret_cast<char*>(SxV_plane), right_singular_size);
+            uint32_t right_singular_size = btf->ColumnCount*num_components*btf->DataSize;
+            fs.read(reinterpret_cast<char*>(SxV_plane), right_singular_size);
 
-			if(!fs)
-			{
-			    return nullptr;
-			}
+            if(!fs)
+            {
+                return nullptr;
+            }
 
-			btf->Offsets[chan_idx] = u_plane_offset;
-			u_plane_offset += left_singular_size;
-			btf->Offsets[btf->ChannelCount + chan_idx] = sxv_plane_offset;
-			sxv_plane_offset += right_singular_size;
+            btf->Offsets[chan_idx] = u_plane_offset;
+            u_plane_offset += left_singular_size;
+            btf->Offsets[btf->ChannelCount + chan_idx] = sxv_plane_offset;
+            sxv_plane_offset += right_singular_size;
         }
 
-		btf->LeftSingularUSize = u_plane_offset;
-		btf->RightSingularSxVSize = sxv_plane_offset;
+        btf->LeftSingularUSize = u_plane_offset;
+        btf->RightSingularSxVSize = sxv_plane_offset;
 
-		uint32_t plane_idx = 0;
-		{
-		btf->LeftSingularU = new uint8_t[u_plane_offset];
-		uint32_t offset = 0;
-		for(uint32_t end_idx = btf->ChannelCount; plane_idx < end_idx; ++plane_idx)
-		{
-			auto size = btf->RowCount*btf->ComponentCounts[plane_idx]*btf->DataSize;
-			memcpy(btf->LeftSingularU + offset, matrix_planes[plane_idx], size);
-			offset += size;
-		}
-		assert(offset == u_plane_offset && "Invalid data offset");
-		}
-		
-		{
-		btf->RightSingularSxV = new uint8_t[sxv_plane_offset];
-		uint32_t offset = 0;
-		for(uint32_t end_idx = 2*btf->ChannelCount, comp_idx = 0; plane_idx < end_idx; ++plane_idx, ++comp_idx)
-		{
-			auto size = btf->ColumnCount*btf->ComponentCounts[comp_idx]*btf->DataSize;
-			memcpy(btf->RightSingularSxV + offset, matrix_planes[plane_idx], size);
-			offset += size;
-		}
-		assert(offset == sxv_plane_offset && "Invalid data offset");
-		}	
+        uint32_t plane_idx = 0;
+        {
+        btf->LeftSingularU = new uint8_t[u_plane_offset];
+        uint32_t offset = 0;
+        for(uint32_t end_idx = btf->ChannelCount; plane_idx < end_idx; ++plane_idx)
+        {
+            auto size = btf->RowCount*btf->ComponentCounts[plane_idx]*btf->DataSize;
+            memcpy(btf->LeftSingularU + offset, matrix_planes[plane_idx], size);
+            offset += size;
+        }
+        assert(offset == u_plane_offset && "Invalid data offset");
+        }
+        
+        {
+        btf->RightSingularSxV = new uint8_t[sxv_plane_offset];
+        uint32_t offset = 0;
+        for(uint32_t end_idx = 2*btf->ChannelCount, comp_idx = 0; plane_idx < end_idx; ++plane_idx, ++comp_idx)
+        {
+            auto size = btf->ColumnCount*btf->ComponentCounts[comp_idx]*btf->DataSize;
+            memcpy(btf->RightSingularSxV + offset, matrix_planes[plane_idx], size);
+            offset += size;
+        }
+        assert(offset == sxv_plane_offset && "Invalid data offset");
+        }	
 
         auto end_pos = fs.tellg();
         fs.seekg(0, std::ios::end);
@@ -824,11 +824,11 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
 
         fs.read(reinterpret_cast<char*>(&num_components1), sizeof(num_components1));
         
-		auto num_components = std::max(1u, std::min(num_components0, num_components1));
-		for(uint32_t i = 0; i < btf->ChannelCount; ++i)
-		{
-			btf->ComponentCounts[i] = num_components;
-		}
+        auto num_components = std::max(1u, std::min(num_components0, num_components1));
+        for(uint32_t i = 0; i < btf->ChannelCount; ++i)
+        {
+            btf->ComponentCounts[i] = num_components;
+        }
         fs.read(reinterpret_cast<char*>(&btf->RowCount), sizeof(btf->RowCount));
         fs.read(reinterpret_cast<char*>(&btf->ColumnCount), sizeof(btf->ColumnCount));
 
@@ -859,7 +859,7 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
 
         size_t left_singular_size = btf->RowCount*num_components*btf->DataSize;
         btf->LeftSingularU = new uint8_t[left_singular_size];
-		btf->LeftSingularUSize = left_singular_size;
+        btf->LeftSingularUSize = left_singular_size;
         fs.read(reinterpret_cast<char*>(btf->LeftSingularU), left_singular_size);
 
         if(!fs)
@@ -868,7 +868,7 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
         }
 
         size_t right_singular_size = btf->ColumnCount*num_components*btf->DataSize;
-		btf->RightSingularSxVSize = right_singular_size;
+        btf->RightSingularSxVSize = right_singular_size;
         btf->RightSingularSxV = new uint8_t[right_singular_size];
         fs.read(reinterpret_cast<char*>(btf->RightSingularSxV), right_singular_size);
 
@@ -877,16 +877,16 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
             return nullptr;
         }
 
-		for(uint32_t idx = 0; idx < btf->ChannelCount; ++idx)
-		{
-			btf->Offsets[idx] = idx*num_components*btf->DataSize;
-		}
+        for(uint32_t idx = 0; idx < btf->ChannelCount; ++idx)
+        {
+            btf->Offsets[idx] = idx*num_components*btf->DataSize;
+        }
 
-		uint32_t offset = btf->ChannelCount;
-		for(uint32_t idx = 0; idx < btf->ChannelCount; ++idx)
-		{
-			btf->Offsets[offset + idx] = 0;
-		}
+        uint32_t offset = btf->ChannelCount;
+        for(uint32_t idx = 0; idx < btf->ChannelCount; ++idx)
+        {
+            btf->Offsets[offset + idx] = 0;
+        }
 
         btf->UElementStride = btf->ChannelCount*btf->DataSize;
         btf->SxVElementStride = btf->DataSize;
@@ -915,7 +915,7 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
 
     // Flip origin
     uint32_t chan_count = btf->ChannelCount;
-	uint32_t* sxv_offsets = btf->Offsets + btf->ChannelCount;
+    uint32_t* sxv_offsets = btf->Offsets + btf->ChannelCount;
     for(uint32_t y = 0, btf_height = btf->Height, y_end = btf_height / 2; y < y_end; ++y)
     {
         for(uint32_t x = 0, btf_width = btf->Width; x < btf_width; ++x)
@@ -924,11 +924,11 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
             uint32_t dst_xy_idx = (btf_height - 1 - y)*btf_width + x;
             for(uint32_t chan_idx = 0; chan_idx < chan_count; ++chan_idx)
             {
-		        auto component_count = btf->ComponentCounts[chan_idx];
-		        uint32_t src_SxV_elem_offset = src_xy_idx*component_count*btf->SxVElementStride;
+                auto component_count = btf->ComponentCounts[chan_idx];
+                uint32_t src_SxV_elem_offset = src_xy_idx*component_count*btf->SxVElementStride;
                 uint32_t dst_SxV_elem_offset = dst_xy_idx*component_count*btf->SxVElementStride;
-		        uint32_t SxV_offset = sxv_offsets[chan_idx];
-		        auto src_SxVslice = btf->RightSingularSxV + SxV_offset + src_SxV_elem_offset;
+                uint32_t SxV_offset = sxv_offsets[chan_idx];
+                auto src_SxVslice = btf->RightSingularSxV + SxV_offset + src_SxV_elem_offset;
                 auto dst_SxVslice = btf->RightSingularSxV + SxV_offset + dst_SxV_elem_offset;
 
                 std::swap_ranges(src_SxVslice, src_SxVslice + component_count*btf->DataSize, dst_SxVslice);
@@ -936,10 +936,10 @@ BTF* LoadBTF(const char* filename, BTFExtra* out_extra)
         }
     }
 
-	if(out_extra)
-	{
-		*out_extra = extra;
-	}
+    if(out_extra)
+    {
+        *out_extra = extra;
+    }
 
     return btf.release();
 }
