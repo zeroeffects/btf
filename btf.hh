@@ -95,7 +95,7 @@ struct ThreadedBVHNode2;
 struct BTF
 {
     uint32_t                    ConsineFlag = false;
-    uint32_t				    ChannelCount = 3;
+    uint32_t                    ChannelCount = 3;
     uint32_t                    Width = 0,
                                 Height = 0;
     uint32_t                    DynamicRangeReduction = false;
@@ -104,7 +104,7 @@ struct BTF
         uint32_t                Width = 0;
         uint32_t                Height = 0;
     }                           HeightMapSize;
-    uint16_t*					HeightMap = nullptr;
+    uint16_t*                   HeightMap = nullptr;
 
     uint32_t                    ColorModel = 0;
     Vector3                     ColorMean;
@@ -114,10 +114,10 @@ struct BTF
                                 ColumnCount = 0,
                                 DataSize = 0;
 
-    uint8_t*					LeftSingularU = nullptr,
+    uint8_t*                    LeftSingularU = nullptr,
            *                    RightSingularSxV = nullptr;
 
-    uint64_t					LeftSingularUSize = 0,
+    uint64_t                    LeftSingularUSize = 0,
                                 RightSingularSxVSize = 0;
 
     Vector3*					Lights = nullptr;
@@ -130,8 +130,8 @@ struct BTF
     uint32_t                    UElementStride = 0,
                                 SxVElementStride = 0;
 
-    uint32_t*					Offsets = nullptr;
-    uint32_t*					ComponentCounts = nullptr;
+    uint32_t*                   Offsets = nullptr;
+    uint32_t*                   ComponentCounts = nullptr;
 };
 
 struct BTFDeleter
