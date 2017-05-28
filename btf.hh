@@ -120,7 +120,7 @@ struct BTF
     uint64_t                    LeftSingularUSize = 0,
                                 RightSingularSxVSize = 0;
 
-    Vector3*					Lights = nullptr;
+    Vector3*                    Lights = nullptr;
 
     uint32_t                    LightCount = 0;
 
